@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -40,6 +41,27 @@ public class RESTExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
     }
 
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<ErrorDTO> handleEmailException(EmailException ex) {
+        ErrorDTO dto = new ErrorDTO(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
+    }
 
+    // add more methods to catch other exceptions as needed...
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDTO> handleGlobalException(Exception ex) {
+        String uuid = UUID.randomUUID().toString();
+        System.out.println("------------------------");
+        System.out.println("ERROR ID: " + uuid);
+        ex.printStackTrace();
+        System.out.println("------------------------");
+
+        ErrorDTO dto = new ErrorDTO(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Call Support Team. ERROR ID:" + uuid);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dto);
+    }
 
 }
